@@ -1,11 +1,15 @@
-# validation and detection box colors
+# welcome message before starting
 welcome = "YWIL - YOU WORK, IT LOOKS. LET'S START THE ASSEMBLY!"
 
 # validation and detection box colors
-colors = {
+colors_hex = {
     'green': '#0ea84b',
     'red': '#ec1f24',
     'gray': '#868686'}
+colors_rgb = {
+    'green': (14, 168, 75),
+    'red': (236, 31, 36),
+    'white': (255, 255, 255)}
 
 # classification multilabel steps constants
 multilabel_labels = [
