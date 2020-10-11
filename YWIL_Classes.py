@@ -18,6 +18,10 @@ class Boundary:
         self.Width = w
         self.Height = h
 
+    def __str__(self):
+        return 'x:{:.2f} y:{:.2f} w:{:.2f} h:{:.2f}'.format(
+            self.Left, self.Top, self.Width, self.Height)
+
 class Detection(Classification):
 
     def __init__(self, label, probability, x, y, w, h):
