@@ -3,13 +3,13 @@ welcome = "YWIL - YOU WORK, IT LOOKS. LET'S START THE ASSEMBLY!"
 
 # validation and detection box colors
 colors_hex = {
-    'green': '#0ea84b',
-    'red': '#ec1f24',
-    'gray': '#868686'}
-colors_rgb = {
-    'green': (14, 168, 75),
-    'red': (236, 31, 36),
-    'white': (255, 255, 255)}
+    'yes': '#0ea84b',
+    'no': '#ec1f24',
+    'aux': '#868686'}
+colors_bgr = {
+    'yes': (75, 168, 14),
+    'no': (36, 31, 236),
+    'aux': (255, 255, 255)}
 
 # classification multilabel steps constants
 multilabel_labels = [
@@ -26,16 +26,16 @@ multilabel_labels = [
     "right",
     "wrong"]
 multilabel_help = [
-    "Multilabel classification from 0 to 4 ready",
-    "Waiting for the white base to be placed...",
-    "Place the first part in the rectangular hole",
-    "Place the red part as shown in the help image",
-    "Place the pink part with the hole facing up",
-    "Place the gray rotor on top of the pink part",
-    "Well done! Let's continue with the next steps"]
+    "MULTILABEL CLASSIF. MODEL FOR STEPS 0 TO 4 READY",
+    "WAITING FOR THE WHITE BASE TO BE PLACED...",
+    "PLACE THE FIRST PART IN THE RECTANGULAR HOLE",
+    "PLACE THE RED PART AS SHOWN IN THE HELP IMAGE",
+    "PLACE THE PINK PART WITH THE HOLE FACING UP",
+    "PLACE THE GRAY ROTOR ON TOP OF THE PINK PART",
+    "WELL DONE! LET'S CONTINUE WITH THE NEXT STEPS"]
 multilabel_error = [
-    "Flip the pink part, it is placed backwards",
-    "Remove the previous assembly from the base"]
+    "FLIP THE PINK PART, IT IS PLACED BACKWARDS",
+    "REMOVE THE PREVIOUS ASSEMBLY FROM THE BASE"]
 
 # object detection steps constants
 detection_labels = [
@@ -45,12 +45,12 @@ detection_labels = [
     "Step6.hole",
     "Step6.part"]
 detection_help = [
-    "Object Detection model for steps 5 and 6 ready",
-    "Place the green parts in the four square holes",
-    "Place the orange part in the central round hole",
-    "Congratulations! Let's move on to the last step"]
+    "OBJECT DETECTION MODEL FOR STEPS 5 AND 6 READY",
+    "PLACE THE GREEN PARTS IN THE FOUR SQUARE HOLES",
+    "PLACE THE ORANGE PART IN THE CENTRAL ROUND HOLE",
+    "CONGRATULATIONS! LET'S MOVE ON TO THE LAST STEP"]
 detection_error = [
-    "Remove the marked part, it is in the wrong hole"]
+    "REMOVE THE MARKED PART, IT IS IN THE WRONG HOLE"]
 
 # classification multiclass steps constants
 multiclass_labels = [
@@ -59,9 +59,9 @@ multiclass_labels = [
     "Step7.false.A",
     "Step7.false.B"]
 multiclass_help = [
-    "Multiclass classification for step 7 ready",
-    "Place the gray gear on top of the mechanism",
-    "Very good job, human! Assembly completed!"]
+    "MULTICLASS CLASSIF. MODEL FOR LAST STEP 7 READY",
+    "PLACE THE GRAY GEAR ON TOP OF THE MECHANISM",
+    "VERY GOOD JOB, HUMAN! ASSEMBLY COMPLETED!"]
 multiclass_error = [
-    "Flip the gray gear, it is placed backwards",
-    "Rotate the gear a bit until it fits properly"]
+    "FLIP THE GRAY GEAR, IT IS PLACED BACKWARDS",
+    "ROTATE THE GEAR A BIT UNTIL IT FITS PROPERLY"]
