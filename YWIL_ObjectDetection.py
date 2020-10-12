@@ -8,11 +8,11 @@ from YWIL_Classes import Detection
 
 class ObjectDetection():
 
-    PROB_THRESHOLD = 0.2
+    PROB_THRESHOLD = 0.5
     MAX_DETECTIONS = 5
 
     ANCHOR_BOXES = np.array([[0.573, 0.677], [1.87, 2.06], [3.34, 5.47], [7.88, 3.53], [9.77, 9.17]])
-    IOU_THRESHOLD = 0.4
+    IOU_THRESHOLD = 0.5
 
     def __init__(self):
         model_path = 'ObjectDetection/model'
