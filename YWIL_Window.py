@@ -16,8 +16,8 @@ class Window():
         self.instruction = Label(self.root, borderwidth = 0, bg='black', fg='white')
         self.instruction.config(font=('Tahoma', 14, 'bold'), wraplength=300, text=welcome)
 
-        self.validation = Label(self.root, borderwidth = 0, bg=colors_hex['gray'])
-        self.assembly = Label(self.root, borderwidth = 0, bg=colors_hex['gray'])
+        self.validation = Label(self.root, borderwidth = 0, bg=colors_hex['aux'])
+        self.assembly = Label(self.root, borderwidth = 0, bg=colors_hex['aux'])
 
         self.currently = Label(self.root, borderwidth = 0, bg='black', fg='white')
         self.currently.config(font=('Tahoma', 14), wraplength=300)
@@ -44,8 +44,8 @@ class Window():
 
         for n in range(8):
             self.bar_images.append(Label(self.root, borderwidth=0))
-            self.bar_images[n].config(bg=colors_hex['gray'], image=alpha_images[n])
+            self.bar_images[n].config(bg=colors_hex['aux'], image=alpha_images[n])
             self.bar_images[n].place(x=60*(2*n), y=480, width=60, height=60)
             self.bar_progress.append(Label(self.root, borderwidth=0))
-            self.bar_progress[n].config(bg=colors_hex['gray'])
+            self.bar_progress[n].config(bg=colors_hex['aux'])
             self.bar_progress[n].place(x=60*(2*n+1), y=480, width=60, height=60)
