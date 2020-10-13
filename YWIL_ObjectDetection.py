@@ -8,7 +8,7 @@ from YWIL_Classes import Detection
 
 class ObjectDetection():
 
-    PROB_THRESHOLD = 0.5
+    PROB_THRESHOLD = 0.7
     MAX_DETECTIONS = 5
 
     ANCHOR_BOXES = np.array([[0.573, 0.677], [1.87, 2.06], [3.34, 5.47], [7.88, 3.53], [9.77, 9.17]])

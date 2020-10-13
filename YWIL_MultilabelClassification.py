@@ -5,7 +5,7 @@ from YWIL_Classes import Classification
 
 class MultilabelClassification:
 
-    PROB_THRESHOLD = 0.5
+    PROB_THRESHOLD = 0.7
     MAX_DETECTIONS = 2
 
     def __init__(self):
