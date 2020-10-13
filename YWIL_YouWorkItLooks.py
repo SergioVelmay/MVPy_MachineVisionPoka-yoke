@@ -42,14 +42,15 @@ for model in range(number_of_models):
     for message in range(number_of_messages[model]):
         message_waitings[str(model) + str(message)] = 0
 
-welcome_waiting = 0
-min_validations = 25
 waiting_millis = 40
 waiting_frames = 25
+min_validations = 25
 
+welcome_waiting = 0
 current_step = 0
 current_model = 0
 current_message = 0
+
 assembly_completed = False
 
 infer_times = []
@@ -116,14 +117,14 @@ def process_multilabel(predictions):
                 condition_1 = multilabel_labels[3] in detected_labels
                 condition_2 = multilabel_labels[4] in detected_labels
                 if condition_1 and condition_2:
-                    update_progress()
                     update_message()
+                    update_progress()
                 elif condition_1:
                     checking_value = 'aux'
             for label in detected_labels:
                 if str(current_step) in label:
-                    update_progress()
                     update_message()
+                    update_progress()
                     break
     draw_validation(checking_value)
     write_instruction(message)
@@ -164,12 +165,12 @@ def process_detection(predictions):
                 if label == detection_labels[1]:
                     part_labels = part_labels + 1
             if part_labels == 4:
-                update_progress()
                 update_message()
+                update_progress()
         if current_step == 6:
             if detection_labels[4] in selected_labels:
-                update_progress()
                 update_message()
+                update_progress()
     draw_validation(checking_value)
     write_instruction(message)
     if current_message == 0:
