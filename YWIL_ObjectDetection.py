@@ -1,9 +1,6 @@
-import os
-import tempfile
-import numpy as np
 import cv2
-import onnxruntime
-import onnx
+import numpy as np
+from openvino.inference_engine import IECore
 from YWIL_Classes import Detection
 
 class ObjectDetection():
@@ -16,40 +13,51 @@ class ObjectDetection():
 
     def __init__(self):
         model_path = 'ObjectDetection/model'
-        model_onnx = model_path + '.onnx'
+        model_xml = model_path + '.xml'
+        model_bin = model_path + '.bin'
         model_labels = model_path + '.labels'
+        device_name = 'CPU'
+        # device_name = 'MYRIAD'
 
         with open(model_labels, 'r') as io:
             self.labels = [x.split(sep=' ', maxsplit=1)[-1].strip() for x in io]
 
-        model = onnx.load(model_onnx)
+        inference_engine = IECore()
 
-        with tempfile.TemporaryDirectory() as dirpath:
-            temp = os.path.join(dirpath, os.path.basename(model_onnx))
-            model.graph.input[0].type.tensor_type.shape.dim[-1].dim_param = 'dim1'
-            model.graph.input[0].type.tensor_type.shape.dim[-2].dim_param = 'dim2'
-            onnx.save(model, temp)
-            options = onnxruntime.SessionOptions()
-            options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_DISABLE_ALL
-            self.session = onnxruntime.InferenceSession(temp, options)
+        network = inference_engine.read_network(model=model_xml, weights=model_bin)
 
-        self.input_name = self.session.get_inputs()[0].name
+        network.batch_size = 1
+
+        self.input_blob = next(iter(network.input_info))
+        self.output_blob = next(iter(network.outputs))
+
+        n, c, h, w = network.input_info[self.input_blob].input_data.shape
+
+        self.exec_network = inference_engine.load_network(network=network, device_name=device_name)
+
+        self.images = np.ndarray(shape=(n, c, h, w))
 
     def Infer(self, image):
+        self.images[0] = self._preprocess(image)
+
+        result = self.exec_network.infer(inputs={self.input_blob: self.images})
+
+        outputs = result[self.output_blob]
+
+        return self._postprocess(outputs)
+
+    def _preprocess(self, image):
         crop_image = image[0:480, 80:560]
+
         resized_image = cv2.resize(crop_image, (416, 416), interpolation=cv2.INTER_AREA)
 
-        inputs = np.array(resized_image, dtype=np.float32)[np.newaxis,:,:,(2,1,0)]
-        inputs = np.ascontiguousarray(np.rollaxis(inputs, 3, 1))
+        input_image = resized_image.transpose((2, 0, 1))
 
-        input_data = self.session.run(None, {self.input_name: inputs})
-
-        outputs = np.squeeze(input_data).transpose((1,2,0)).astype(np.float32)
-        results = self._postprocess(outputs)
-
-        return results
+        return input_image
 
     def _postprocess(self, outputs):
+        outputs = np.squeeze(outputs).transpose((1,2,0)).astype(np.float32)
+
         boxes, class_probs = self._extract_bounding_boxes(outputs)
 
         max_probs = np.amax(class_probs, axis=1)

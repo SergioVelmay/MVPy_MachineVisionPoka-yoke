@@ -14,6 +14,7 @@ class MulticlassClassification:
         model_bin = model_path + '.bin'
         model_labels = model_path + '.labels'
         device_name = 'CPU'
+        # device_name = 'MYRIAD'
 
         with open(model_labels, 'r') as io:
             self.labels = [x.split(sep=' ', maxsplit=1)[-1].strip() for x in io]
@@ -34,18 +35,27 @@ class MulticlassClassification:
         self.images = np.ndarray(shape=(n, c, h, w))
 
     def Infer(self, image):
+        self.images[0] = self._preprocess(image)
+
+        result = self.exec_network.infer(inputs={self.input_blob: self.images})
+
+        outputs = result[self.output_blob]
+
+        return self._postprocess(outputs)
+
+    def _preprocess(self, image):
         crop_image = image[0:480, 80:560]
+
         resized_image = cv2.resize(crop_image, (224, 224), interpolation=cv2.INTER_AREA)
+
         input_image = resized_image.transpose((2, 0, 1))
 
-        self.images[0] = input_image
+        return input_image
 
-        ml_result = self.exec_network.infer(inputs={self.input_blob: self.images})
-        ml_output = ml_result[self.output_blob]
-
+    def _postprocess(self, outputs):
         predictions = list()
         
-        for probs in ml_output:
+        for probs in outputs:
             probs = np.squeeze(probs)
             top_ind = np.argsort(probs)[-self.MAX_DETECTIONS:][::-1]
             for id in top_ind:
