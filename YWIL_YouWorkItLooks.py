@@ -323,7 +323,8 @@ def draw_completed(image):
     cv2_array = cv2.cvtColor(added_image, cv2.COLOR_BGR2RGBA)
     return cv2_array
 
-video_capture = cv2.VideoCapture(0)
+# video_capture = cv2.VideoCapture(0)
+video_capture = cv2.VideoCapture(1)
 
 video_streaming()
 
