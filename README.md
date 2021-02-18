@@ -1,6 +1,8 @@
 # MVPy | Machine Vision Poka-yoke
 
-Windows 10
+## Project Setup
+
+Windows 10 Pro
 
 Microsoft Visual Studio Community 2019
 
@@ -9,10 +11,6 @@ Microsoft Visual C++ 2015-2019 Redistributable x64
 CMake 3.19.4
 
 Python 3.6.5 x64
-
-Intel Distribution of OpenVINO Toolkit 2020.3.1 LTS
-
-Intel Neural Compute Stick 2 NCS2
 
 ```
 py -m pip install --upgrade pip
@@ -35,6 +33,8 @@ cv2.__version__
 
 exit()
 ```
+
+Intel Distribution of OpenVINO Toolkit 2020.3.1 LTS
 
 ```
 cd C:\Program Files (x86)\IntelSWTools\openvino\bin\
@@ -60,23 +60,72 @@ cd C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer
 install_prerequisites.bat
 ```
 
+Intel Neural Compute Stick 2 NCS2
+
 ```
 cd C:\"Program Files (x86)"\IntelSWTools\openvino\deployment_tools\demo
 
 demo_squeezenet_download_convert_run.bat –d MYRIAD
 
-[ ERROR ] Cannot create ShapeOf layer pool10/input_rank/shape_of id:145
+[ INFO ] Loading network files
+
+Top 10 results:
+
+Image C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\demo\car.png
+
+classid probability label
+------- ----------- -----
+817     0.6708984   sports car, sport car
+479     0.1922607   car wheel
+511     0.0936890   convertible
+436     0.0216064   beach wagon, station wagon, wagon, estate car, beach waggon, station waggon, waggon
+751     0.0075760   racer, race car, racing car
+656     0.0049667   minivan
+717     0.0027428   pickup, pickup truck
+581     0.0019779   grille, radiator grille
+468     0.0014219   cab, hack, taxi, taxicab
+661     0.0008636   Model T
+
+[ INFO ] Execution successful
 ```
 ```
 cd C:\"Program Files (x86)"\IntelSWTools\openvino\deployment_tools\demo
 
 demo_security_barrier_camera.bat -d MYRIAD
+
+[ INFO ] Loading detection model to the MYRIAD plugin
+[ INFO ] Loading Vehicle Attribs model to the MYRIAD plugin
+[ INFO ] Loading Licence Plate Recognition (LPR) model to the MYRIAD plugin
+[ INFO ] Number of InferRequests: 1 (detection), 3 (classification), 3 (recognition)
+[ INFO ] Display resolution: 1920x1080
+[ INFO ] Number of allocated frames: 3
+[ INFO ] Resizable input with support of ROI crop and auto resize is disabled
+
+0.1FPS for (1 / 1) frames
+
+Detection InferRequests usage: 100.0%
+
+[ INFO ] Execution successful
+```
+
+Visual Studio Code 
+
+Git 2.30.1
+
+https://github.com/SergioVelmay/MVPy_MachineVisionPoka-yoke.git
+
+C:\Users\sergi\source\repos\
+
+```
+cd C:\Users\sergi\source\repos\MVPy_MachineVisionPoka-yoke
+
+MVPy.bat
 ```
 
 ```
-cd C:\Program Files (x86)\IntelSWTools\openvino\bin\
+( cd C:\Program Files (x86)\IntelSWTools\openvino\bin\ )
 
-setupvars.bat
+( setupvars.bat )
 ```
 
 ```
@@ -85,8 +134,4 @@ cd C:\Users\sergi\source\repos\MVPy_MachineVisionPoka-yoke
 py MVPy.py
 ```
 
-```
-cd C:\Users\sergi\source\repos\MVPy_MachineVisionPoka-yoke
-
-MVPy.bat
-```
+Videos .mp4 without audio track
