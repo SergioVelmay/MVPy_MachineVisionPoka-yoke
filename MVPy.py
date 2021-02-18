@@ -5,7 +5,7 @@ import cv2
 from datetime import datetime
 import time
 
-print('OpenCV', cv2.__version__)
+print('[ MVPy ] OpenCV', cv2.__version__)
 
 from Interface import Window
 
@@ -25,18 +25,18 @@ from Images import completed_image, completed_mask
 from openvino.inference_engine import IECore
 
 inference_engine = IECore()
-print('[MVPy.py] OpenVINO inference engine created')
+print('[ MVPy ] OpenVINO inference engine created')
 
 from MultilabelClassification import MultilabelClassification
 from ObjectDetection import ObjectDetection
 from MulticlassClassification import MulticlassClassification
 
 multilabel = MultilabelClassification(inference_engine)
-print('[MVPy.py] Multilabel Classification model loaded')
+print('[ MVPy ] Multilabel Classification model loaded')
 detection = ObjectDetection(inference_engine)
-print('[MVPy.py] Object Detection model loaded')
+print('[ MVPy ] Object Detection model loaded')
 multiclass = MulticlassClassification(inference_engine)
-print('[MVPy.py] Multiclass Classification model loaded')
+print('[ MVPy ] Multiclass Classification model loaded')
 
 number_of_models = 3
 number_of_steps = 8
@@ -335,8 +335,8 @@ def draw_completed(image):
 
 # video_capture = cv2.VideoCapture(0)
 # video_capture = cv2.VideoCapture(1)
-video_capture = cv2.VideoCapture(2)
-# video_capture = cv2.VideoCapture('Resources/AssemblySample_NoSoundTrack_1920x1080_to_1440x1080_to_640x480.mp4')
+# video_capture = cv2.VideoCapture(2)
+video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
 
 video_streaming()
 
