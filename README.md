@@ -135,3 +135,16 @@ py MVPy.py
 ```
 
 Videos .mp4 without audio track
+
+```
+Warning: libmmd.dll couldn't be found in %PATH%.
+Please check if the redistributable package for Intel(R) C++ Compiler is installed and the library path is added to the PATH environment variable.
+System reboot can be required to update the system environment.
+
+C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64_win\compiler\
+
+libmmd.dll
+
+Edit the system environment variables / Environment Variables... / Path / Edit... / New / "C:\..." / Ok
+
+https://software.intel.com/content/www/us/en/develop/articles/redistributable-libraries-for-intel-c-and-fortran-2020-compilers-for-windows.html
