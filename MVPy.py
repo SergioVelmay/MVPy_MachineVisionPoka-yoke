@@ -10,6 +10,7 @@ print('[ MVPy ] OpenCV', cv2.__version__)
 from Interface import Window
 
 window = Window()
+print('[ MVPy ] Graphical Interface loaded')
 
 import Constants
 from Constants import colors_hex, colors_bgr
@@ -25,7 +26,7 @@ from Images import completed_image, completed_mask
 from openvino.inference_engine import IECore
 
 inference_engine = IECore()
-print('[ MVPy ] OpenVINO inference engine created')
+print('[ MVPy ] OpenVINO Inference Engine created')
 
 from MultilabelClassification import MultilabelClassification
 from ObjectDetection import ObjectDetection
