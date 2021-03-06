@@ -339,6 +339,9 @@ def draw_completed(image):
 # video_capture = cv2.VideoCapture(2)
 video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
 
-video_streaming()
+def main():
+    video_streaming()
+    window.root.mainloop()
 
-window.root.mainloop()
+if __name__ == "__main__":
+    main()
