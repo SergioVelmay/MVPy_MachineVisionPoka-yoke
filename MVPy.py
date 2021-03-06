@@ -66,6 +66,12 @@ assembly_completed = False
 
 infer_times = []
 
+# video_capture = cv2.VideoCapture(0)
+# video_capture = cv2.VideoCapture(1)
+# video_capture = cv2.VideoCapture(2)
+video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
+# video_capture = cv2.VideoCapture('C:/Users/sergi/Desktop/MVPy/TrainingSet/Videos/Tap_Step0_Hands_02.mp4')
+
 def video_streaming():
     global welcome_waiting
     global video_capture
@@ -333,11 +339,6 @@ def draw_completed(image):
     added_image = cv2.bitwise_or(background, completed)
     cv2_array = cv2.cvtColor(added_image, cv2.COLOR_BGR2RGBA)
     return cv2_array
-
-# video_capture = cv2.VideoCapture(0)
-# video_capture = cv2.VideoCapture(1)
-# video_capture = cv2.VideoCapture(2)
-video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
 
 def main():
     video_streaming()
