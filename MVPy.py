@@ -64,6 +64,9 @@ current_message = 0
 
 assembly_completed = False
 
+training_captures = False
+frame_number = 0
+
 infer_times = []
 
 # video_capture = cv2.VideoCapture(0)
@@ -73,12 +76,17 @@ video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
 # video_capture = cv2.VideoCapture('C:/Users/sergi/Desktop/MVPy/TrainingSet/Videos/Tap_Step0_Hands_02.mp4')
 
 def video_streaming():
-    global welcome_waiting
     global video_capture
-    global current_step
-    global assembly_completed
     _, frame = video_capture.read()
     image = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_AREA)
+    global frame_number
+    if training_captures:
+        frame_number = frame_number + 1
+        if frame_number % 6 == 0:
+            image_crop = image[0:480, 80:560]
+            image_name = f'C:/Users/sergi/Desktop/MVPy/TrainingSet/Images/Tap_Step0/Tap_Step0_Hands_02_{frame_number:06}.jpg'
+            cv2.imwrite(image_name, image_crop)
+    global welcome_waiting
     if welcome_waiting > waiting_frames:
         start = datetime.now().microsecond
         predictions = []
@@ -102,6 +110,7 @@ def video_streaming():
             process_multiclass(predictions)
     else:
         welcome_waiting = welcome_waiting + 1
+    global assembly_completed
     if assembly_completed:
         cv2_array = draw_completed(image)
     else:
