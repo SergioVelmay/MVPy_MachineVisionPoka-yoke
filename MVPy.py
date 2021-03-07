@@ -28,15 +28,21 @@ from openvino.inference_engine import IECore
 inference_engine = IECore()
 print('[ MVPy ] OpenVINO Inference Engine created')
 
+# device_name = 'AUTO'
+# device_name = 'CPU'
+# device_name = 'GPU'
+# device_name = 'HDDL'
+device_name = 'MYRIAD'
+
 from MultilabelClassification import MultilabelClassification
 from ObjectDetection import ObjectDetection
 from MulticlassClassification import MulticlassClassification
 
-multilabel = MultilabelClassification(inference_engine)
+multilabel = MultilabelClassification(inference_engine, device_name)
 print('[ MVPy ] Multilabel Classification model loaded')
-detection = ObjectDetection(inference_engine)
+detection = ObjectDetection(inference_engine, device_name)
 print('[ MVPy ] Object Detection model loaded')
-multiclass = MulticlassClassification(inference_engine)
+multiclass = MulticlassClassification(inference_engine, device_name)
 print('[ MVPy ] Multiclass Classification model loaded')
 
 number_of_models = 3
@@ -73,7 +79,7 @@ infer_times = []
 # video_capture = cv2.VideoCapture(1)
 # video_capture = cv2.VideoCapture(2)
 video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
-# video_capture = cv2.VideoCapture('C:/Users/sergi/Desktop/MVPy/TrainingSet/Videos/Tap_Step0_Hands_02.mp4')
+# video_capture = cv2.VideoCapture('.../MVPy/TrainingSet/Videos/Tap_Step0_Hands_02.mp4')
 
 def video_streaming():
     global video_capture
@@ -84,18 +90,19 @@ def video_streaming():
         frame_number = frame_number + 1
         if frame_number % 6 == 0:
             image_crop = image[0:480, 80:560]
-            image_name = f'C:/Users/sergi/Desktop/MVPy/TrainingSet/Images/Tap_Step0/Tap_Step0_Hands_02_{frame_number:06}.jpg'
+            image_name = f'.../MVPy/TrainingSet/Images/Tap_Step0/Tap_Step0_Hands_02_{frame_number:06}.jpg'
             cv2.imwrite(image_name, image_crop)
     global welcome_waiting
     if welcome_waiting > waiting_frames:
-        start = datetime.now().microsecond
+        image_crop = image[0:480, 80:560]
         predictions = []
+        start = datetime.now().microsecond
         if current_model == 0:
-            predictions = multilabel.Infer(image)
+            predictions = multilabel.Infer(image_crop)
         elif current_model == 1:
-            predictions = detection.Infer(image)
+            predictions = detection.Infer(image_crop)
         elif current_model == 2:
-            predictions = multiclass.Infer(image)
+            predictions = multiclass.Infer(image_crop)
         end = datetime.now().microsecond
         window.assembly.config(image=assembly_images[current_step])
         print_currently(len(predictions))
