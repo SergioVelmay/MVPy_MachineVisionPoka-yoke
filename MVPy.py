@@ -1,3 +1,35 @@
+def string_to_boolean(value):
+    if isinstance(value, bool):
+       return value
+    if value.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif value.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+import argparse
+
+parser = argparse.ArgumentParser(
+    prog='MVPy | Machine Vision Poka-yoke', 
+    description='Edge computing application for manual assembly cells.', 
+    epilog="Usage example: $ py MVPy.py -d MYRIAD -t False")
+parser.add_argument('-d', '--device', 
+    default='MYRIAD', 
+    choices=['AUTO', 'CPU', 'GPU', 'HDDL', 'MYRIAD'], 
+    help='device name for OpenVINO inference')
+parser.add_argument('-t', '--training', 
+    default=False, 
+    choices=['False', 'True', 'No', 'Yes', '0', '1'], 
+    type=string_to_boolean, 
+    help='store image captures for training')
+
+args = parser.parse_args()
+
+device_name = args.device
+
+training_captures = args.training
+
 from tkinter import Tk, Label
 from PIL import ImageTk, Image
 from numpy import median
@@ -27,12 +59,6 @@ from openvino.inference_engine import IECore
 
 inference_engine = IECore()
 print('[ MVPy ] OpenVINO Inference Engine created')
-
-# device_name = 'AUTO'
-# device_name = 'CPU'
-# device_name = 'GPU'
-# device_name = 'HDDL'
-device_name = 'MYRIAD'
 
 from MultilabelClassification import MultilabelClassification
 from ObjectDetection import ObjectDetection
@@ -70,7 +96,6 @@ current_message = 0
 
 assembly_completed = False
 
-training_captures = False
 frame_number = 0
 
 infer_times = []
