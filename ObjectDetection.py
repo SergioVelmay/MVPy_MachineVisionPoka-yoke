@@ -11,18 +11,14 @@ class ObjectDetection():
     ANCHOR_BOXES = np.array([[0.573, 0.677], [1.87, 2.06], [3.34, 5.47], [7.88, 3.53], [9.77, 9.17]])
     IOU_THRESHOLD = 0.5
 
-    def __init__(self, inference_engine):
+    def __init__(self, inference_engine, device_name):
         model_path = 'ObjectDetection/model'
         model_xml = model_path + '.xml'
         model_bin = model_path + '.bin'
         model_labels = model_path + '.labels'
-        # device_name = 'CPU'
-        device_name = 'MYRIAD'
 
         with open(model_labels, 'r') as io:
             self.labels = [x.split(sep=' ', maxsplit=1)[-1].strip() for x in io]
-
-        # inference_engine = IECore()
 
         network = inference_engine.read_network(model=model_xml, weights=model_bin)
 
@@ -47,9 +43,7 @@ class ObjectDetection():
         return self._postprocess(outputs)
 
     def _preprocess(self, image):
-        crop_image = image[0:480, 80:560]
-
-        resized_image = cv2.resize(crop_image, (416, 416), interpolation=cv2.INTER_AREA)
+        resized_image = cv2.resize(image, (416, 416), interpolation=cv2.INTER_AREA)
 
         input_image = resized_image.transpose((2, 0, 1))
 

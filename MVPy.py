@@ -1,3 +1,35 @@
+def string_to_boolean(value):
+    if isinstance(value, bool):
+       return value
+    if value.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif value.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+import argparse
+
+parser = argparse.ArgumentParser(
+    prog='MVPy | Machine Vision Poka-yoke', 
+    description='Edge computing application for manual assembly cells.', 
+    epilog="Usage example: $ py MVPy.py -d MYRIAD -t False")
+parser.add_argument('-d', '--device', 
+    default='MYRIAD', 
+    choices=['AUTO', 'CPU', 'GPU', 'HDDL', 'MYRIAD'], 
+    help='device name for OpenVINO inference')
+parser.add_argument('-t', '--training', 
+    default=False, 
+    choices=['False', 'True', 'No', 'Yes', '0', '1'], 
+    type=string_to_boolean, 
+    help='store image captures for training')
+
+args = parser.parse_args()
+
+device_name = args.device
+
+training_captures = args.training
+
 from tkinter import Tk, Label
 from PIL import ImageTk, Image
 from numpy import median
@@ -32,11 +64,11 @@ from MultilabelClassification import MultilabelClassification
 from ObjectDetection import ObjectDetection
 from MulticlassClassification import MulticlassClassification
 
-multilabel = MultilabelClassification(inference_engine)
+multilabel = MultilabelClassification(inference_engine, device_name)
 print('[ MVPy ] Multilabel Classification model loaded')
-detection = ObjectDetection(inference_engine)
+detection = ObjectDetection(inference_engine, device_name)
 print('[ MVPy ] Object Detection model loaded')
-multiclass = MulticlassClassification(inference_engine)
+multiclass = MulticlassClassification(inference_engine, device_name)
 print('[ MVPy ] Multiclass Classification model loaded')
 
 number_of_models = 3
@@ -64,24 +96,38 @@ current_message = 0
 
 assembly_completed = False
 
+frame_number = 0
+
 infer_times = []
 
+# video_capture = cv2.VideoCapture(0)
+# video_capture = cv2.VideoCapture(1)
+# video_capture = cv2.VideoCapture(2)
+video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
+# video_capture = cv2.VideoCapture('.../MVPy/TrainingSet/Videos/Tap_Step0_Hands_02.mp4')
+
 def video_streaming():
-    global welcome_waiting
     global video_capture
-    global current_step
-    global assembly_completed
     _, frame = video_capture.read()
     image = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_AREA)
+    global frame_number
+    if training_captures:
+        frame_number = frame_number + 1
+        if frame_number % 6 == 0:
+            image_crop = image[0:480, 80:560]
+            image_name = f'.../MVPy/TrainingSet/Images/Tap_Step0/Tap_Step0_Hands_02_{frame_number:06}.jpg'
+            cv2.imwrite(image_name, image_crop)
+    global welcome_waiting
     if welcome_waiting > waiting_frames:
-        start = datetime.now().microsecond
+        image_crop = image[0:480, 80:560]
         predictions = []
+        start = datetime.now().microsecond
         if current_model == 0:
-            predictions = multilabel.Infer(image)
+            predictions = multilabel.Infer(image_crop)
         elif current_model == 1:
-            predictions = detection.Infer(image)
+            predictions = detection.Infer(image_crop)
         elif current_model == 2:
-            predictions = multiclass.Infer(image)
+            predictions = multiclass.Infer(image_crop)
         end = datetime.now().microsecond
         window.assembly.config(image=assembly_images[current_step])
         print_currently(len(predictions))
@@ -96,6 +142,7 @@ def video_streaming():
             process_multiclass(predictions)
     else:
         welcome_waiting = welcome_waiting + 1
+    global assembly_completed
     if assembly_completed:
         cv2_array = draw_completed(image)
     else:
@@ -334,11 +381,9 @@ def draw_completed(image):
     cv2_array = cv2.cvtColor(added_image, cv2.COLOR_BGR2RGBA)
     return cv2_array
 
-# video_capture = cv2.VideoCapture(0)
-# video_capture = cv2.VideoCapture(1)
-# video_capture = cv2.VideoCapture(2)
-video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
+def main():
+    video_streaming()
+    window.root.mainloop()
 
-video_streaming()
-
-window.root.mainloop()
+if __name__ == "__main__":
+    main()

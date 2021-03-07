@@ -8,18 +8,14 @@ class MulticlassClassification:
     PROB_THRESHOLD = 0.7
     MAX_DETECTIONS = 1
 
-    def __init__(self, inference_engine):
+    def __init__(self, inference_engine, device_name):
         model_path = 'MulticlassClassification/model'
         model_xml = model_path + '.xml'
         model_bin = model_path + '.bin'
         model_labels = model_path + '.labels'
-        # device_name = 'CPU'
-        device_name = 'MYRIAD'
 
         with open(model_labels, 'r') as io:
             self.labels = [x.split(sep=' ', maxsplit=1)[-1].strip() for x in io]
-
-        # inference_engine = IECore()
 
         network = inference_engine.read_network(model=model_xml, weights=model_bin)
 
@@ -44,9 +40,7 @@ class MulticlassClassification:
         return self._postprocess(outputs)
 
     def _preprocess(self, image):
-        crop_image = image[0:480, 80:560]
-
-        resized_image = cv2.resize(crop_image, (224, 224), interpolation=cv2.INTER_AREA)
+        resized_image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
 
         input_image = resized_image.transpose((2, 0, 1))
 
