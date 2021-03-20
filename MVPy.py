@@ -13,10 +13,10 @@ import argparse
 parser = argparse.ArgumentParser(
     prog='MVPy | Machine Vision Poka-yoke', 
     description='Edge computing application for manual assembly cells.', 
-    epilog="Usage example: $ py MVPy.py -d MYRIAD -t False")
+    epilog="example: $ py MVPy.py -d MYRIAD -t False")
 parser.add_argument('-d', '--device', 
     default='MYRIAD', 
-    choices=['AUTO', 'CPU', 'GPU', 'HDDL', 'MYRIAD'], 
+    choices=['CPU', 'GPU', 'HDDL', 'MYRIAD'], 
     help='device name for OpenVINO inference')
 parser.add_argument('-t', '--training', 
     default=False, 
@@ -85,7 +85,7 @@ for model in range(number_of_models):
     for message in range(number_of_messages[model]):
         message_waitings[str(model) + str(message)] = 0
 
-waiting_millis = 40
+waiting_millis = 1
 waiting_frames = 25
 min_validations = 25
 
@@ -98,8 +98,6 @@ assembly_completed = False
 
 frame_number = 0
 
-infer_times = []
-
 # video_capture = cv2.VideoCapture(0)
 # video_capture = cv2.VideoCapture(1)
 # video_capture = cv2.VideoCapture(2)
@@ -107,6 +105,9 @@ video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
 # video_capture = cv2.VideoCapture('.../MVPy/TrainingSet/Videos/Tap_Step0_Hands_02.mp4')
 
 def video_streaming():
+    time_total_start = datetime.now().microsecond
+    time_inference_start = 0
+    time_inference_end = 0
     global video_capture
     _, frame = video_capture.read()
     image = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_AREA)
@@ -121,18 +122,18 @@ def video_streaming():
     if welcome_waiting > waiting_frames:
         image_crop = image[0:480, 80:560]
         predictions = []
-        start = datetime.now().microsecond
+        time_inference_start = datetime.now().microsecond
         if current_model == 0:
             predictions = multilabel.Infer(image_crop)
         elif current_model == 1:
             predictions = detection.Infer(image_crop)
         elif current_model == 2:
             predictions = multiclass.Infer(image_crop)
-        end = datetime.now().microsecond
+        time_inference_end = datetime.now().microsecond
         window.assembly.config(image=assembly_images[current_step])
         print_currently(len(predictions))
         print_detections(predictions)
-        print_inference(start, end)
+        print_inference_time(time_inference_start, time_inference_end)
         if current_model == 0:
             process_multilabel(predictions)
         elif current_model == 1:
@@ -151,6 +152,7 @@ def video_streaming():
     image_tk = ImageTk.PhotoImage(image=pil_image)
     window.streaming.image_tk = image_tk
     window.streaming.config(image=image_tk)
+    print_total_time(time_total_start)
     window.streaming.after(waiting_millis, video_streaming)
 
 def process_multilabel(predictions):
@@ -319,12 +321,10 @@ def update_model():
     global message_waitings
     global current_message
     global current_model
-    global infer_times
     current = wait_message()
     if message_waitings[current] == waiting_frames:
         current_message = 0
         current_model = current_model + 1
-        infer_times = []
 
 def print_currently(count):
     if count > 0:
@@ -339,13 +339,18 @@ def print_detections(predictions):
         text += prediction.__str__() + '\n'
     window.detections.config(text=text)
 
-def print_inference(start, end):
-    if infer_times.count == waiting_frames:
-        infer_times.pop(0)
-    infer_times.append((end-start)/1000)
-    ms = median(infer_times)
-    text = 'Last inference time: {:.3f}ms'.format(ms)
-    window.inference.config(text=text)
+def print_inference_time(start, end):
+    ms = (end-start)/1000
+    if ms > 0:
+        text = 'Infer: {:.1f}ms'.format(ms)
+        window.inference.config(text=text)
+
+def print_total_time(start):
+    end = datetime.now().microsecond
+    ms = (end-start)/1000
+    if ms > 0:
+        text = 'Total: {:.1f}ms'.format(ms)
+        window.total.config(text=text)
 
 def write_instruction(message):
     window.instruction.config(text=message)
