@@ -26,7 +26,10 @@ class Window():
         self.detections.config(font=('Tahoma', 14), wraplength=300, anchor=N)
 
         self.inference = Label(self.root, borderwidth = 0, bg='black', fg='white')
-        self.inference.config(font=('Tahoma', 14), wraplength=300)
+        self.inference.config(font=('Tahoma', 14), wraplength=150)
+
+        self.total = Label(self.root, borderwidth = 0, bg='black', fg='white')
+        self.total.config(font=('Tahoma', 14), wraplength=150)
 
         self.streaming.place(x=0, y=0, width=640, height=480)
         self.instruction.place(x=640, y=0, width=320, height=80)
@@ -34,7 +37,8 @@ class Window():
         self.assembly.place(x=800, y=80, width=160, height=160)
         self.currently.place(x=640, y=240, width=320, height=60)
         self.detections.place(x=640, y=300, width=320, height=120)
-        self.inference.place(x=640, y=420, width=320, height=60)
+        self.inference.place(x=640, y=420, width=160, height=60)
+        self.total.place(x=800, y=420, width=160, height=60)
 
         import Images
         from Images import alpha_images
