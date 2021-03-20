@@ -2,15 +2,17 @@
 
 ## Project Setup
 
-Windows 10 Pro
+### Windows
 
-Microsoft Visual Studio Community 2019
+- Windows 10 Pro
 
-Microsoft Visual C++ 2015-2019 Redistributable x64
+- Microsoft Visual Studio Community 2019
 
-CMake 3.19.4
+- Microsoft Visual C++ 2015-2019 Redistributable x64
 
-Python 3.6.5 x64
+- CMake 3.19.4
+
+- Python 3.6.5 x64
 
 ```
 py -m pip install --upgrade pip
@@ -123,15 +125,32 @@ MVPy.bat
 ```
 
 ```
-( cd C:\Program Files (x86)\IntelSWTools\openvino\bin\ )
+cd C:\Program Files (x86)\IntelSWTools\openvino\bin\
 
-( setupvars.bat )
+setupvars.bat
 ```
 
 ```
 cd C:\Users\sergi\source\repos\MVPy_MachineVisionPoka-yoke
 
 py MVPy.py
+```
+
+```
+py MVPy.py -h
+
+usage: MVPy | Machine Vision Poka-yoke 
+
+[-h] [-d {CPU,GPU,HDDL,MYRIAD}] [-t {False,True,No,Yes,0,1}]
+
+Edge computing application for manual assembly cells.
+
+optional arguments:
+  -h, --help        show this help message and exit
+  -d, --device      device name for OpenVINO inference
+  -t, --training    store image captures for training
+
+example: $ py MVPy.py -d MYRIAD -t False
 ```
 
 Videos .mp4 without audio track
