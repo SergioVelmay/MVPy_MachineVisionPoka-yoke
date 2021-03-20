@@ -98,6 +98,10 @@ assembly_completed = False
 
 frame_number = 0
 
+import logging
+
+logging.basicConfig(format='[ %(levelname)s ] New Video Capture | Frame Count %(message)s | %(asctime)s', level=logging.INFO)
+
 # video_capture = cv2.VideoCapture(0)
 # video_capture = cv2.VideoCapture(1)
 # video_capture = cv2.VideoCapture(2)
@@ -106,14 +110,14 @@ video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
 
 def video_streaming():
     time_total_start = datetime.now().microsecond
+    global frame_number
+    logging.info(str(frame_number).zfill(5))
     time_inference_start = 0
     time_inference_end = 0
     global video_capture
     _, frame = video_capture.read()
     image = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_AREA)
-    global frame_number
     if training_captures:
-        frame_number = frame_number + 1
         if frame_number % 6 == 0:
             image_crop = image[0:480, 80:560]
             image_name = f'.../MVPy/TrainingSet/Images/Tap_Step0/Tap_Step0_Hands_02_{frame_number:06}.jpg'
@@ -152,6 +156,7 @@ def video_streaming():
     image_tk = ImageTk.PhotoImage(image=pil_image)
     window.streaming.image_tk = image_tk
     window.streaming.config(image=image_tk)
+    frame_number = frame_number + 1
     print_total_time(time_total_start)
     window.streaming.after(waiting_millis, video_streaming)
 
