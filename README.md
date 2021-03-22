@@ -110,13 +110,15 @@ Detection InferRequests usage: 100.0%
 [ INFO ] Execution successful
 ```
 
-Visual Studio Code 
+## Project Start
 
-Git 2.30.1
+- Visual Studio Code 
 
-https://github.com/SergioVelmay/MVPy_MachineVisionPoka-yoke.git
+- Git 2.30.1
 
-C:\Users\sergi\source\repos\
+- https://github.com/SergioVelmay/MVPy_MachineVisionPoka-yoke.git
+
+- C:\Users\sergi\source\repos\
 
 ```
 cd C:\Users\sergi\source\repos\MVPy_MachineVisionPoka-yoke
@@ -167,3 +169,29 @@ libmmd.dll
 Edit the system environment variables / Environment Variables... / Path / Edit... / New / "C:\..." / Ok
 
 https://software.intel.com/content/www/us/en/develop/articles/redistributable-libraries-for-intel-c-and-fortran-2020-compilers-for-windows.html
+```
+
+## Model Optimizer
+
+### Windows
+
+```
+cd C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer\install_prerequisites
+
+install_prerequisites_tf.bat
+```
+
+```
+pip install tensorflow==1.2
+```
+
+```
+cd C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer
+
+py mo_tf.py --log_level=DEBUG --output_dir C:\Users\sergi\Desktop\MVPy\Models\Part4Detection\IR -b 1 --input_model C:\Users\sergi\Desktop\MVPy\Models\Part4Detection\GeneralCompact.TensorFlow\model.pb
+
+[ SUCCESS ] Generated IR version 10 model.
+[ SUCCESS ] XML file: C:\Users\sergi\Desktop\MVPy\Models\Part4Detection\IR\model.xml
+[ SUCCESS ] BIN file: C:\Users\sergi\Desktop\MVPy\Models\Part4Detection\IR\model.bin
+[ SUCCESS ] Total execution time: 24.51 seconds.
+```
