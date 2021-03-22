@@ -5,7 +5,7 @@ from Classes import Classification
 
 class MulticlassClassification:
 
-    PROB_THRESHOLD = 0.7
+    PROB_THRESHOLD = 0.5
     MAX_DETECTIONS = 1
 
     def __init__(self, inference_engine, device_name):
