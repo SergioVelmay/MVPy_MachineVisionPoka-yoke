@@ -19,7 +19,7 @@ parser.add_argument('-d', '--device',
     choices=['CPU', 'GPU', 'HDDL', 'MYRIAD'], 
     help='device name for OpenVINO inference')
 parser.add_argument('-t', '--training', 
-    default=False, 
+    default='False', 
     choices=['False', 'True', 'No', 'Yes', '0', '1'], 
     type=string_to_boolean, 
     help='store image captures for training')
@@ -28,7 +28,7 @@ args = parser.parse_args()
 
 device_name = args.device
 
-training_captures = args.training
+training_captures = string_to_boolean(args.training)
 
 from tkinter import Tk, Label
 from PIL import ImageTk, Image
@@ -63,6 +63,7 @@ print('[ MVPy ] OpenVINO Inference Engine created')
 from MultilabelClassification import MultilabelClassification
 from ObjectDetection import ObjectDetection
 from MulticlassClassification import MulticlassClassification
+from Part4Detection import Part4Detection
 
 multilabel = MultilabelClassification(inference_engine, device_name)
 print('[ MVPy ] Multilabel Classification model loaded')
@@ -70,6 +71,8 @@ detection = ObjectDetection(inference_engine, device_name)
 print('[ MVPy ] Object Detection model loaded')
 multiclass = MulticlassClassification(inference_engine, device_name)
 print('[ MVPy ] Multiclass Classification model loaded')
+part_4_det = Part4Detection(inference_engine, device_name)
+print('[ MVPy ] Part 4 Detection model loaded')
 
 number_of_models = 3
 number_of_steps = 8
@@ -91,7 +94,7 @@ min_validations = 25
 
 welcome_waiting = 0
 current_step = 0
-current_model = 0
+current_model = 3
 current_message = 0
 
 assembly_completed = False
@@ -105,8 +108,25 @@ logging.basicConfig(format='[ %(levelname)s ] New Video Capture | Frame Count %(
 # video_capture = cv2.VideoCapture(0)
 # video_capture = cv2.VideoCapture(1)
 # video_capture = cv2.VideoCapture(2)
-video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
-# video_capture = cv2.VideoCapture('.../MVPy/TrainingSet/Videos/Tap_Step0_Hands_02.mp4')
+# video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
+
+training_folder = 'C:/Users/sergi/Desktop/MVPy/TrainingSet/'
+
+videos_folder = training_folder + 'Videos/'
+images_folder = training_folder + 'Images/ORing_Hand/'
+
+zooms_folder = training_folder + 'Zooms/Part4_Glove_R/'
+training_zooms = False
+
+import os
+
+if not os.path.exists(images_folder):
+    os.makedirs(images_folder)
+
+if not os.path.exists(zooms_folder):
+    os.makedirs(zooms_folder)
+
+video_capture = cv2.VideoCapture(videos_folder + 'Part4_Glove_R.mp4')
 
 def video_streaming():
     time_total_start = datetime.now().microsecond
@@ -120,7 +140,7 @@ def video_streaming():
     if training_captures:
         if frame_number % 6 == 0:
             image_crop = image[0:480, 80:560]
-            image_name = f'.../MVPy/TrainingSet/Images/Tap_Step0/Tap_Step0_Hands_02_{frame_number:06}.jpg'
+            image_name = f'{images_folder}ORing_Hand_L_{frame_number:06}.jpg'
             cv2.imwrite(image_name, image_crop)
     global welcome_waiting
     if welcome_waiting > waiting_frames:
@@ -133,6 +153,8 @@ def video_streaming():
             predictions = detection.Infer(image_crop)
         elif current_model == 2:
             predictions = multiclass.Infer(image_crop)
+        elif current_model == 3:
+            predictions = part_4_det.Infer(image_crop)
         time_inference_end = datetime.now().microsecond
         window.assembly.config(image=assembly_images[current_step])
         print_currently(len(predictions))
@@ -145,6 +167,21 @@ def video_streaming():
             image = draw_detections(image, detections)
         elif current_model == 2:
             process_multiclass(predictions)
+        elif current_model == 3:
+            detections = process_part_4_det(predictions)
+            image = draw_detections(image, detections)
+            if training_zooms and len(detections) > 0:
+                zoom = detections[0].Box
+                x1 = int(round(zoom.Left * 480))
+                xw = int(round(zoom.Width * 480))
+                x2 = x1 + xw
+                y1 = int(round(zoom.Top * 480))
+                yh = int(round(zoom.Height * 480))
+                y2 = y1 + yh
+                image_zoom = image_crop[y1:y2, x1:x2]
+                if image_zoom.size != 0:
+                    zoom_name = f'{zooms_folder}Part4_Glove_R_{frame_number:06}.jpg'
+                    cv2.imwrite(zoom_name, image_zoom)
     else:
         welcome_waiting = welcome_waiting + 1
     global assembly_completed
@@ -213,7 +250,7 @@ def process_detection(predictions):
             selected_predictions.append(prediction)
     selected_labels = []
     for prediction in selected_predictions:
-            selected_labels.append(prediction.Label)
+        selected_labels.append(prediction.Label)
     if current_message != 0:
         if detection_labels[2] in selected_labels:
             error_predictions = []
@@ -284,6 +321,18 @@ def process_multiclass(predictions):
         window.bar_progress[current_step].config(
             image=progress_images['yes'], bg=colors_hex['yes'])
         update_message()
+
+def process_part_4_det(predictions):
+    if len(predictions) > 0:
+        checking_value = 'yes'
+    else:
+        checking_value = 'aux'
+    selected_predictions = []
+    for prediction in predictions:
+        selected_predictions.append(prediction)
+    selected_labels = []
+    draw_validation(checking_value)
+    return selected_predictions
 
 def validate_step():
     global current_step
@@ -368,6 +417,8 @@ def draw_detections(image, predictions):
             image = draw_rectangle(image, prediction.Box, colors_bgr['yes'], 4)
         elif 'error' in prediction.Label:
             image = draw_rectangle(image, prediction.Box, colors_bgr['no'], 6)
+        elif 'Part4' in prediction.Label:
+            image = draw_rectangle(image, prediction.Box, colors_bgr['aux'], 2)
     return image
 
 def draw_validation(checking_value):
