@@ -1,9 +1,9 @@
 def string_to_boolean(value):
     if isinstance(value, bool):
        return value
-    if value.lower() in ('yes', 'true', 't', 'y', '1'):
+    if value.lower() in ('true', 't', 'yes', 'y', '1'):
         return True
-    elif value.lower() in ('no', 'false', 'f', 'n', '0'):
+    elif value.lower() in ('false', 'f', 'no', 'n', '0'):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
@@ -64,6 +64,7 @@ from MultilabelClassification import MultilabelClassification
 from ObjectDetection import ObjectDetection
 from MulticlassClassification import MulticlassClassification
 from Part4Detection import Part4Detection
+from ORingClassification import ORingClassification
 
 multilabel = MultilabelClassification(inference_engine, device_name)
 print('[ MVPy ] Multilabel Classification model loaded')
@@ -73,6 +74,8 @@ multiclass = MulticlassClassification(inference_engine, device_name)
 print('[ MVPy ] Multiclass Classification model loaded')
 part_4_det = Part4Detection(inference_engine, device_name)
 print('[ MVPy ] Part 4 Detection model loaded')
+oring_class = ORingClassification(inference_engine, device_name)
+print('[ MVPy ] O-Ring Classification model loaded')
 
 number_of_models = 3
 number_of_steps = 8
@@ -105,11 +108,6 @@ import logging
 
 logging.basicConfig(format='[ %(levelname)s ] New Video Capture | Frame Count %(message)s | %(asctime)s', level=logging.INFO)
 
-# video_capture = cv2.VideoCapture(0)
-# video_capture = cv2.VideoCapture(1)
-# video_capture = cv2.VideoCapture(2)
-# video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
-
 training_folder = 'C:/Users/sergi/Desktop/MVPy/TrainingSet/'
 
 videos_folder = training_folder + 'Videos/'
@@ -126,12 +124,16 @@ if not os.path.exists(images_folder):
 if not os.path.exists(zooms_folder):
     os.makedirs(zooms_folder)
 
-video_capture = cv2.VideoCapture(videos_folder + 'Part4_Glove_R.mp4')
+# video_capture = cv2.VideoCapture(0)
+# video_capture = cv2.VideoCapture(1)
+video_capture = cv2.VideoCapture(2)
+# video_capture = cv2.VideoCapture('Videos/MVPy_Assembly_640x480.mp4')
+# video_capture = cv2.VideoCapture(videos_folder + 'Part4_Glove_R.mp4')
 
 def video_streaming():
     time_total_start = datetime.now().microsecond
     global frame_number
-    logging.info(str(frame_number).zfill(5))
+    logging.info(str(frame_number).zfill(6))
     time_inference_start = 0
     time_inference_end = 0
     global video_capture
@@ -170,7 +172,7 @@ def video_streaming():
         elif current_model == 3:
             detections = process_part_4_det(predictions)
             image = draw_detections(image, detections)
-            if training_zooms and len(detections) > 0:
+            if len(detections) > 0:
                 zoom = detections[0].Box
                 x1 = int(round(zoom.Left * 480))
                 xw = int(round(zoom.Width * 480))
@@ -180,8 +182,18 @@ def video_streaming():
                 y2 = y1 + yh
                 image_zoom = image_crop[y1:y2, x1:x2]
                 if image_zoom.size != 0:
-                    zoom_name = f'{zooms_folder}Part4_Glove_R_{frame_number:06}.jpg'
-                    cv2.imwrite(zoom_name, image_zoom)
+                    validations = oring_class.Infer(image_zoom)
+                    if len(validations) > 0:
+                        if 'True' in validations[0].Label:
+                            color = colors_bgr['yes']
+                        else:
+                            color = colors_bgr['no']
+                        text = 'O-Ring ' + '{:.1f}%'.format(validations[0].Probability)
+                        cv2.putText(image, text, (x1 + 85, y1 + 20), fontFace=cv2.FONT_HERSHEY_DUPLEX,  
+                            fontScale=0.6, thickness=2, color=color, bottomLeftOrigin=False)
+                    if training_zooms:
+                        zoom_name = f'{zooms_folder}Part4_Glove_R_{frame_number:06}.jpg'
+                        cv2.imwrite(zoom_name, image_zoom)
     else:
         welcome_waiting = welcome_waiting + 1
     global assembly_completed
