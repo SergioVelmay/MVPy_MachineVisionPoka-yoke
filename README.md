@@ -175,15 +175,21 @@ https://software.intel.com/content/www/us/en/develop/articles/redistributable-li
 
 ### Windows
 
+Prerequisites
+
 ```
 cd C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer\install_prerequisites
 
 install_prerequisites_tf.bat
 ```
 
+TensorFlow
+
 ```
 pip install tensorflow==1.2
 ```
+
+Object Detection
 
 ```
 cd C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer
@@ -194,4 +200,17 @@ py mo_tf.py --log_level=DEBUG --output_dir C:\Users\sergi\Desktop\MVPy\Models\Pa
 [ SUCCESS ] XML file: C:\Users\sergi\Desktop\MVPy\Models\Part4Detection\IR\model.xml
 [ SUCCESS ] BIN file: C:\Users\sergi\Desktop\MVPy\Models\Part4Detection\IR\model.bin
 [ SUCCESS ] Total execution time: 24.51 seconds.
+```
+
+Image Classification
+
+```
+cd C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer
+
+py mo_tf.py --log_level=DEBUG --output_dir C:\Users\sergi\Desktop\MVPy\Models\ORingClassification\IR -b 1 --input_model C:\Users\sergi\Desktop\MVPy\Models\ORingClassification\GeneralCompact.TensorFlow\model.pb
+
+[ SUCCESS ] Generated IR version 10 model.
+[ SUCCESS ] XML file: C:\Users\sergi\Desktop\MVPy\Models\ORingClassification\IR\model.xml
+[ SUCCESS ] BIN file: C:\Users\sergi\Desktop\MVPy\Models\ORingClassification\IR\model.bin
+[ SUCCESS ] Total execution time: 54.47 seconds.
 ```
