@@ -39,3 +39,8 @@ assembly_name = 'AssemblyCompleted'
 
 completed_image = url_route + assembly_name + '.png'
 completed_mask = url_route + assembly_name + '_mask.png'
+
+gloves_name = 'SecurityGloves'
+
+gloves_image = url_route + gloves_name + '.png'
+gloves_mask = url_route + gloves_name + '_mask.png'

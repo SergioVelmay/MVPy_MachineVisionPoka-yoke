@@ -20,8 +20,7 @@ parser.add_argument('-d', '--device',
     help='device name for OpenVINO inference')
 parser.add_argument('-t', '--training', 
     default='False', 
-    choices=['False', 'True', 'No', 'Yes', '0', '1'], 
-    type=string_to_boolean, 
+    choices=['False', 'True', 'No', 'Yes', '0', '1'],  
     help='store image captures for training')
 
 args = parser.parse_args()
@@ -54,6 +53,7 @@ import Images
 from Images import color_images, progress_images
 from Images import assembly_images, validation_images
 from Images import completed_image, completed_mask
+from Images import gloves_image, gloves_mask
 
 from openvino.inference_engine import IECore
 
@@ -65,6 +65,7 @@ from ObjectDetection import ObjectDetection
 from MulticlassClassification import MulticlassClassification
 from Part4Detection import Part4Detection
 from ORingClassification import ORingClassification
+from GloveClassification import GloveClassification
 
 multilabel = MultilabelClassification(inference_engine, device_name)
 print('[ MVPy ] Multilabel Classification model loaded')
@@ -76,6 +77,8 @@ part_4_det = Part4Detection(inference_engine, device_name)
 print('[ MVPy ] Part 4 Detection model loaded')
 oring_class = ORingClassification(inference_engine, device_name)
 print('[ MVPy ] O-Ring Classification model loaded')
+glove_class = GloveClassification(inference_engine, device_name)
+print('[ MVPy ] Glove Classification model loaded')
 
 number_of_models = 3
 number_of_steps = 8
@@ -101,6 +104,8 @@ current_model = 3
 current_message = 0
 
 assembly_completed = False
+gloves_missing = False
+gloves_tracking = True
 
 frame_number = 0
 
@@ -111,7 +116,7 @@ logging.basicConfig(format='[ %(levelname)s ] New Video Capture | Frame Count %(
 training_folder = 'C:/Users/sergi/Desktop/MVPy/TrainingSet/'
 
 videos_folder = training_folder + 'Videos/'
-images_folder = training_folder + 'Images/ORing_Hand/'
+images_folder = training_folder + 'Images/Step4_Back_False/'
 
 zooms_folder = training_folder + 'Zooms/Part4_Glove_R/'
 training_zooms = False
@@ -145,6 +150,7 @@ def video_streaming():
             image_name = f'{images_folder}ORing_Hand_L_{frame_number:06}.jpg'
             cv2.imwrite(image_name, image_crop)
     global welcome_waiting
+    global gloves_missing
     if welcome_waiting > waiting_frames:
         image_crop = image[0:480, 80:560]
         predictions = []
@@ -158,10 +164,6 @@ def video_streaming():
         elif current_model == 3:
             predictions = part_4_det.Infer(image_crop)
         time_inference_end = datetime.now().microsecond
-        window.assembly.config(image=assembly_images[current_step])
-        print_currently(len(predictions))
-        print_detections(predictions)
-        print_inference_time(time_inference_start, time_inference_end)
         if current_model == 0:
             process_multilabel(predictions)
         elif current_model == 1:
@@ -184,21 +186,36 @@ def video_streaming():
                 if image_zoom.size != 0:
                     validations = oring_class.Infer(image_zoom)
                     if len(validations) > 0:
+                        predictions.append(validations[0])
                         if 'True' in validations[0].Label:
                             color = colors_bgr['yes']
                         else:
                             color = colors_bgr['no']
-                        text = 'O-Ring ' + '{:.1f}%'.format(validations[0].Probability)
-                        cv2.putText(image, text, (x1 + 85, y1 + 20), fontFace=cv2.FONT_HERSHEY_DUPLEX,  
-                            fontScale=0.6, thickness=2, color=color, bottomLeftOrigin=False)
+                        text = 'O-Ring'
+                        cv2.putText(image, text, (x1 + 85, y1 + 25), fontFace=cv2.FONT_HERSHEY_DUPLEX,  
+                            fontScale=0.9, thickness=2, color=color, bottomLeftOrigin=False)
                     if training_zooms:
                         zoom_name = f'{zooms_folder}Part4_Glove_R_{frame_number:06}.jpg'
                         cv2.imwrite(zoom_name, image_zoom)
+        
+        if gloves_tracking:
+            tracking = glove_class.Infer(image_crop)
+            if len(tracking) > 0:
+                predictions.append(tracking[0])
+                if 'Hand' in tracking[0].Label:
+                    gloves_missing = True
+        window.assembly.config(image=assembly_images[current_step])
+        print_currently(len(predictions))
+        print_detections(predictions)
+        print_inference_time(time_inference_start, time_inference_end)
     else:
         welcome_waiting = welcome_waiting + 1
     global assembly_completed
     if assembly_completed:
         cv2_array = draw_completed(image)
+    elif gloves_missing:
+        cv2_array = draw_gloves(image)
+        gloves_missing = False
     else:
         cv2_array = cv2.cvtColor(image, cv2.COLOR_BGR2RGBA)
     pil_image = Image.fromarray(cv2_array)
@@ -342,7 +359,6 @@ def process_part_4_det(predictions):
     selected_predictions = []
     for prediction in predictions:
         selected_predictions.append(prediction)
-    selected_labels = []
     draw_validation(checking_value)
     return selected_predictions
 
@@ -451,6 +467,14 @@ def draw_completed(image):
     mask = cv2.imread(completed_mask, cv2.IMREAD_GRAYSCALE)
     background = cv2.bitwise_or(image, image, mask = mask)
     added_image = cv2.bitwise_or(background, completed)
+    cv2_array = cv2.cvtColor(added_image, cv2.COLOR_BGR2RGBA)
+    return cv2_array
+
+def draw_gloves(image):
+    gloves = cv2.imread(gloves_image)
+    mask = cv2.imread(gloves_mask, cv2.IMREAD_GRAYSCALE)
+    background = cv2.bitwise_or(image, image, mask = mask)
+    added_image = cv2.bitwise_or(background, gloves)
     cv2_array = cv2.cvtColor(added_image, cv2.COLOR_BGR2RGBA)
     return cv2_array
 
