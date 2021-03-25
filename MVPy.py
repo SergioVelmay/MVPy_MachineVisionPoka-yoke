@@ -95,12 +95,12 @@ for model in range(number_of_models):
         message_waitings[str(model) + str(message)] = 0
 
 waiting_millis = 1
-waiting_frames = 25
-min_validations = 25
+waiting_frames = 30
+min_validations = 15
 
 welcome_waiting = 0
 current_step = 0
-current_model = 3
+current_model = 0
 current_message = 0
 
 assembly_completed = False
@@ -116,7 +116,7 @@ logging.basicConfig(format='[ %(levelname)s ] New Video Capture | Frame Count %(
 training_folder = 'C:/Users/sergi/Desktop/MVPy/TrainingSet/'
 
 videos_folder = training_folder + 'Videos/'
-images_folder = training_folder + 'Images/Step4_Back_False/'
+images_folder = training_folder + 'Images/Part_Count/'
 
 zooms_folder = training_folder + 'Zooms/Part4_Glove_R/'
 training_zooms = False
@@ -147,7 +147,7 @@ def video_streaming():
     if training_captures:
         if frame_number % 6 == 0:
             image_crop = image[0:480, 80:560]
-            image_name = f'{images_folder}ORing_Hand_L_{frame_number:06}.jpg'
+            image_name = f'{images_folder}Part_Count_{frame_number:06}.jpg'
             cv2.imwrite(image_name, image_crop)
     global welcome_waiting
     global gloves_missing
