@@ -6,7 +6,7 @@ from Classes import Classification
 class MultilabelClassification:
 
     PROB_THRESHOLD = 0.5
-    MAX_DETECTIONS = 2
+    MAX_DETECTIONS = 3
 
     def __init__(self, inference_engine, device_name):
         model_path = 'MultilabelClassification/model'

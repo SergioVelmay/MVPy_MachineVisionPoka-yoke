@@ -17,14 +17,14 @@ multilabel_labels = [
     "Step1",
     "Step2",
     "Step3",
-    "true",
-    "false",
+    "Hole.Yes",
+    "Hole.No",
     "Step4",
-    "front",
-    "back",
+    "Front",
+    "Back",
     "Step7",
-    "right",
-    "wrong"]
+    "ORing.No",
+    "ORing.Yes"]
 multilabel_help = [
     "MULTILABEL CLASSIF. MODEL FOR STEPS 0 TO 4 READY",
     "WAITING FOR THE WHITE BASE TO BE PLACED...",
