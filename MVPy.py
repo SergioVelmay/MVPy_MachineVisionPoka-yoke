@@ -13,7 +13,7 @@ import argparse
 parser = argparse.ArgumentParser(
     prog='MVPy | Machine Vision Poka-yoke', 
     description='Edge computing application for manual assembly cells.', 
-    epilog="example: $ py MVPy.py -d MYRIAD -t False")
+    epilog='example: $ py MVPy.py -d MYRIAD -t False')
 parser.add_argument('-d', '--device', 
     default='MYRIAD', 
     choices=['CPU', 'GPU', 'HDDL', 'MYRIAD'], 
@@ -49,6 +49,8 @@ from Constants import multilabel_labels, multilabel_help, multilabel_error
 from Constants import detection_labels, detection_help, detection_error
 from Constants import multiclass_labels, multiclass_help, multiclass_error
 
+from Classes import Validation
+
 import Images
 from Images import color_images, progress_images
 from Images import assembly_images, validation_images
@@ -66,6 +68,7 @@ from MulticlassClassification import MulticlassClassification
 from Part4Detection import Part4Detection
 from ORingClassification import ORingClassification
 from GloveClassification import GloveClassification
+from PartCountDetection import PartCountDetection
 
 multilabel = MultilabelClassification(inference_engine, device_name)
 print('[ MVPy ] Multilabel Classification model loaded')
@@ -79,6 +82,8 @@ oring_class = ORingClassification(inference_engine, device_name)
 print('[ MVPy ] O-Ring Classification model loaded')
 glove_class = GloveClassification(inference_engine, device_name)
 print('[ MVPy ] Glove Classification model loaded')
+part_count = PartCountDetection(inference_engine, device_name)
+print('[ MVPy ] Part Count Detection model loaded')
 
 number_of_models = 3
 number_of_steps = 8
@@ -100,12 +105,12 @@ min_validations = 15
 
 welcome_waiting = 0
 current_step = 0
-current_model = 0
+current_model = 999
 current_message = 0
 
 assembly_completed = False
 gloves_missing = False
-gloves_tracking = True
+gloves_tracking = False
 
 frame_number = 0
 
@@ -155,6 +160,8 @@ def video_streaming():
         image_crop = image[0:480, 80:560]
         predictions = []
         time_inference_start = datetime.now().microsecond
+        if current_model == 999:
+            predictions = part_count.Infer(image_crop)
         if current_model == 0:
             predictions = multilabel.Infer(image_crop)
         elif current_model == 1:
@@ -164,6 +171,9 @@ def video_streaming():
         elif current_model == 3:
             predictions = part_4_det.Infer(image_crop)
         time_inference_end = datetime.now().microsecond
+        if current_model == 999:
+            validations = process_part_count(predictions)
+            image = draw_part_count(image, validations)
         if current_model == 0:
             process_multilabel(predictions)
         elif current_model == 1:
@@ -186,7 +196,7 @@ def video_streaming():
                 if image_zoom.size != 0:
                     validations = oring_class.Infer(image_zoom)
                     if len(validations) > 0:
-                        predictions.append(validations[0])
+                        predictions.a(validations[0])
                         if 'True' in validations[0].Label:
                             color = colors_bgr['yes']
                         else:
@@ -201,7 +211,7 @@ def video_streaming():
         if gloves_tracking:
             tracking = glove_class.Infer(image_crop)
             if len(tracking) > 0:
-                predictions.append(tracking[0])
+                predictions.a(tracking[0])
                 if 'Hand' in tracking[0].Label:
                     gloves_missing = True
         window.assembly.config(image=assembly_images[current_step])
@@ -232,7 +242,7 @@ def process_multilabel(predictions):
     checking_value = 'aux'
     detected_labels = []
     for prediction in predictions:
-            detected_labels.append(prediction.Label)
+            detected_labels.a(prediction.Label)
     if current_message != 0:
         if multilabel_labels[5] in detected_labels:
             checking_value = 'no'
@@ -362,6 +372,57 @@ def process_part_4_det(predictions):
     draw_validation(checking_value)
     return selected_predictions
 
+def process_part_count(predictions):
+    if len(predictions) > 0:
+        checking_value = 'yes'
+        predictions = order_predictions(predictions)
+    else:
+        checking_value = 'aux'
+    validations = make_validations(predictions)
+    draw_validation(checking_value)
+    return validations
+
+def order_predictions(predictions):
+    predictions.sort(key=lambda x: x.Box.Top)
+    return predictions
+
+def make_validations(predictions):
+    part5_max = 4
+    part5_count = 0
+    part6_max = 1
+    part6_count = 0
+    validations = []
+    for prediction in predictions:
+        color = colors_bgr['aux']
+        thickness = 2
+        text = ''
+        if 'False' in prediction.Label:
+            color = colors_bgr['no']
+            thickness = 6
+        elif 'True' in prediction.Label:
+            color = colors_bgr['yes']
+            thickness = 4
+            if '5' in prediction.Label:
+                part5_count = part5_count + 1
+                if part5_count > part5_max:
+                    color = colors_bgr['no']
+                    thickness = 6
+                else:
+                    text = f'{part5_count}/{part5_max}'
+            elif '6' in prediction.Label:
+                part6_count = part6_count + 1
+                if part6_count > part6_max:
+                    color = colors_bgr['no']
+                    thickness = 6
+                else:
+                    text = f'{part6_count}/{part6_max}'
+
+        validation = Validation(prediction.Label, prediction.Probability, 
+            prediction.Box.Left, prediction.Box.Top, prediction.Box.Width, prediction.Box.Height, 
+            color, thickness, text)
+        validations.append(validation)
+    return validations
+
 def validate_step():
     global current_step
     global step_validations
@@ -449,6 +510,19 @@ def draw_detections(image, predictions):
             image = draw_rectangle(image, prediction.Box, colors_bgr['aux'], 2)
     return image
 
+def draw_part_count(image, validations):
+    for validation in validations:
+        image = draw_rectangle(image, validation.Detection.Box, validation.Color, validation.Thickness)
+        x1 = int(round(validation.Detection.Box.Left * 480))
+        xw = int(round(validation.Detection.Box.Width * 480))
+        x2 = x1 + xw
+        y1 = int(round(validation.Detection.Box.Top * 480))
+        yh = int(round(validation.Detection.Box.Height * 480))
+        y2 = y1 + yh
+        cv2.putText(image, validation.Text, (x1 + 85, y1 + 25), fontFace=cv2.FONT_HERSHEY_DUPLEX,  
+            fontScale=0.9, thickness=2, color=validation.Color, bottomLeftOrigin=False)
+    return image
+
 def draw_validation(checking_value):
     window.validation.config(
         image=validation_images[checking_value], bg=colors_hex[checking_value])
@@ -482,5 +556,5 @@ def main():
     video_streaming()
     window.root.mainloop()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
