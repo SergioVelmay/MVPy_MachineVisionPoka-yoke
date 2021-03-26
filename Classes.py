@@ -27,3 +27,10 @@ class Detection(Classification):
     def __init__(self, label, probability, x, y, w, h):
         Classification.__init__(self, label, probability)
         self.Box = Boundary(x, y, w, h)
+
+class Validation(Detection):
+    def __init__(self, label, probability, x, y, w, h, color, thickness, text):
+        self.Detection = Detection(label, probability, x, y, w, h)
+        self.Color = color
+        self.Thickness = thickness
+        self.Text = text
