@@ -970,10 +970,20 @@ py mo_tf.py --log_level=DEBUG --output_dir C:\Users\sergi\Desktop\MVPy\Models\OR
 ### Linux <a id="vizi-ai-mraa-gpio-linux"></a>
 
 ```
+sudo add-apt-repository ppa:mraa/mraa
+
+sudo apt-get update
+
+sudo apt-get install libmraa2 libmraa-dev libmraa-java python-mraa python3-mraa node-mraa mraa-tools
+```
+
+```
 sudo apt-get install git build-essential swig3.0 cmake
 
-sudo apt-get install python3-dev nodejs-dev libjson-c-dev
+sudo apt-get install python-dev python3-dev nodejs-dev libjson-c-dev
+```
 
+```
 git clone https://github.com/eclipse/mraa.git
 
 cd mraa
@@ -982,13 +992,23 @@ mkdir build
 
 cd build
 
-cmake ..
+cmake .. -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=DEBUG
 
 make
 
 sudo make install
 
+sudo ln -s /usr/lib/python2.7/site-packages/* /usr/lib/python2.7/dist-packages
+
 sudo ln -s /usr/lib/python3.6/site-packages/* /usr/lib/python3.6/dist-packages
+```
+
+- Add /usr/local/lib to the default Ubuntu path:
+
+```
+LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
+
+sudo ldconfig
 ```
 
 ```
