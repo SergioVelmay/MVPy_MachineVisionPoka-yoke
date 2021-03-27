@@ -1,8 +1,24 @@
-# MVPy | Machine Vision Poka-yoke
+# MVPy | Machine Vision Poka-yoke <a id="top"></a>
+
+- [Project Setup](#project-setup)
+	- [Linux](#project-setup-linux)
+		- [CPU](#project-setup-linux-cpu)
+		- [GPU](#project-setup-linux-gpu)
+		- [MYRIAD](#project-setup-linux-myriad)
+		- [HDDL](#project-setup-linux-hddl)
+	- [Windows](#project-setup-windows)
+		- [NCS2](#project-setup-windows-ncs2)
+- [Project Start](#project-start)
+	- [Linux](#project-start-linux)
+	- [Windows](#project-start-windows)
+- [Model Optimizer](#model-optimizer)
+	- [Windows](#model-optimizer-windows)
+- [Vizi-AI GPIO MRAA](#vizi-ai-gpio-mraa)
+	- [Linux](#vizi-ai-gpio-mraa-linux)
 
 ## Project Setup
 
-### Linux
+### Linux <a id="project-setup-linux"></a>
 
 - Ubuntu 18.04.5 LTS (Bionic Beaver)
 
@@ -30,7 +46,9 @@ cd /opt/intel/openvino/deployment_tools/model_optimizer/install_prerequisites
 sudo ./install_prerequisites.sh
 ```
 
-- CPU
+[⇧](#top)
+
+- CPU <a id="project-setup-linux-cpu"></a>
 
 ```
 cd /opt/intel/openvino/deployment_tools/demo
@@ -184,7 +202,9 @@ classid probability label
 [ INFO ] Execution successful
 ```
 
-- GPU
+[⇧](#top)
+
+- GPU <a id="project-setup-linux-gpu"></a>
 
 ```
 cd /opt/intel/openvino/install_dependencies/
@@ -256,7 +276,9 @@ classid probability label
 [ INFO ] Execution successful
 ```
 
-- MYRIAD
+[⇧](#top)
+
+- MYRIAD <a id="project-setup-linux-myriad"></a>
 
 ```
 source /opt/intel/openvino/bin/setupvars.sh
@@ -435,7 +457,9 @@ classid probability label
 [ INFO ] Execution successful
 ```
 
-- HDDL
+[⇧](#top)
+
+- HDDL <a id="project-setup-linux-hddl"></a>
 
 ```
 source /opt/intel/openvino/bin/setupvars.sh
@@ -662,7 +686,9 @@ classid probability label
 [ INFO ] Execution successful
 ```
 
-### Windows
+[⇧](#top)
+
+### Windows <a id="project-setup-windows"></a>
 
 - Windows 10 Pro
 
@@ -722,7 +748,9 @@ cd C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer
 install_prerequisites.bat
 ```
 
-- Intel Neural Compute Stick 2 NCS2
+[⇧](#top)
+
+- NCS2 (Intel Neural Compute Stick 2) <a id="project-setup-windows-ncs2"></a>
 
 ```
 cd C:\"Program Files (x86)"\IntelSWTools\openvino\deployment_tools\demo
@@ -770,9 +798,11 @@ Detection InferRequests usage: 100.0%
 [ INFO ] Execution successful
 ```
 
+[⇧](#top)
+
 ## Project Start
 
-### Linux
+### Linux <a id="project-start-linux"></a>
 
 - Pillow
 
@@ -824,7 +854,9 @@ cd ~/MVPy_MachineVisionPoka-yoke
 python3 MVPy.py
 ```
 
-### Windows
+[⇧](#top)
+
+### Windows <a id="project-start-windows"></a>
 
 - Visual Studio Code 
 
@@ -885,9 +917,11 @@ Edit the system environment variables / Environment Variables... / Path / Edit..
 https://software.intel.com/content/www/us/en/develop/articles/redistributable-libraries-for-intel-c-and-fortran-2020-compilers-for-windows.html
 ```
 
+[⇧](#top)
+
 ## Model Optimizer
 
-### Windows
+### Windows <a id="model-optimizer-windows"></a>
 
 - Prerequisites
 
@@ -928,3 +962,11 @@ py mo_tf.py --log_level=DEBUG --output_dir C:\Users\sergi\Desktop\MVPy\Models\OR
 [ SUCCESS ] BIN file: C:\Users\sergi\Desktop\MVPy\Models\ORingClassification\IR\model.bin
 [ SUCCESS ] Total execution time: 54.47 seconds.
 ```
+
+[⇧](#top)
+
+## Vizi-AI GPIO MRAA
+
+### Linux <a id="vizi-ai-gpio-mraa-linux"></a>
+
+[⇧](#top)
