@@ -13,8 +13,8 @@
 	- [Windows](#project-start-windows)
 - [Model Optimizer](#model-optimizer)
 	- [Windows](#model-optimizer-windows)
-- [Vizi-AI GPIO MRAA](#vizi-ai-gpio-mraa)
-	- [Linux](#vizi-ai-gpio-mraa-linux)
+- [Vizi-AI MRAA GPIO](#vizi-ai-mraa-gpio)
+	- [Linux](#vizi-ai-mraa-gpio-linux)
 
 ## Project Setup
 
@@ -965,8 +965,81 @@ py mo_tf.py --log_level=DEBUG --output_dir C:\Users\sergi\Desktop\MVPy\Models\OR
 
 [⇧](#top)
 
-## Vizi-AI GPIO MRAA
+## Vizi-AI MRAA GPIO
 
-### Linux <a id="vizi-ai-gpio-mraa-linux"></a>
+### Linux <a id="vizi-ai-mraa-gpio-linux"></a>
+
+```
+sudo apt-get install git build-essential swig3.0 cmake
+
+sudo apt-get install python3-dev nodejs-dev libjson-c-dev
+
+git clone https://github.com/eclipse/mraa.git
+
+cd mraa
+
+mkdir build
+
+cd build
+
+cmake ..
+
+make
+
+sudo make install
+
+sudo ln -s /usr/lib/python3.6/site-packages/* /usr/lib/python3.6/dist-packages
+```
+
+```
+mraa-gpio version
+
+Version v2.2.0-1-gbb1c6df on LEC-AL AI
+```
+
+```
+mraa-gpio list
+
+01         3v3:
+02          5v:
+03    I2C0_DAT: I2C
+04          5v:
+05     I2C0_CK: I2C
+06         GND:
+07      GPIO04: GPIO
+08    UART_TXD: UART
+09         GND:
+10    UART_RXD: UART
+11      GPIO05: GPIO
+12      GPIO06: GPIO
+13      GPIO07: GPIO
+14         GND:
+15      GPIO08: GPIO
+16      GPIO09: GPIO
+17         3v3:
+18      GPIO10: GPIO
+19  SPI_0_MOSI: SPI
+20         GND:
+21  SPI_0_MISO: SPI
+22      GPIO11: GPIO
+23  SPI_0_SCLK: SPI
+24   SPI_0_CE0: SPI
+25         GND:
+26   SPI_0_CE1: SPI
+27    I2C1_DAT: I2C
+28     I2C1_CK: I2C
+29     GPIO1_0: GPIO PWM
+30         GND:
+31     GPIO1_1: GPIO PWM
+32     GPIO1_2: GPIO PWM
+33     GPIO1_3: GPIO PWM
+34         GND:
+35     GPIO1_4: GPIO PWM
+36     GPIO1_5: GPIO PWM
+37     GPIO1_6: GPIO PWM
+38     GPIO1_7: GPIO PWM
+39         GND:
+40     GPIO2_8: GPIO PWM
+```
 
 [⇧](#top)
