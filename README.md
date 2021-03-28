@@ -970,6 +970,16 @@ py mo_tf.py --log_level=DEBUG --output_dir C:\Users\sergi\Desktop\MVPy\Models\OR
 ### Linux <a id="vizi-ai-mraa-gpio-linux"></a>
 
 ```
+sudo modprobe i2c_i801
+
+sudo modprobe gpio-pca953x
+
+echo "pca9535 0x20" > /sys/bus/i2c/devices/i2c-13/new_device
+
+echo "sx1509q 0x3e" > /sys/bus/i2c/devices/i2c-1/new_device
+```
+
+```
 sudo add-apt-repository ppa:mraa/mraa
 
 sudo apt-get update
