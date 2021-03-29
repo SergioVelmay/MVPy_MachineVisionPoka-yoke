@@ -6,7 +6,7 @@ class Classification:
 
     def __str__(self):
         words = str.upper(self.Label).split('.')
-        if (self.Label.startswith('Step')):
+        if (self.Label.startswith('Step') or self.Label.startswith('Part')):
             words[0] = words[0][:4] + ' #' + words[0][4:]
         return ' - '.join(tuple(words)) + '   ( {:.1f}'.format(self.Probability) + '% )'
 

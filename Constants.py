@@ -23,8 +23,8 @@ multilabel_labels = [
     "Front",
     "Back",
     "Step7",
-    "ORing.No",
-    "ORing.Yes"]
+    "ORing.Yes",
+    "ORing.No"]
 multilabel_help = [
     "MULTILABEL CLASSIF. MODEL FOR STEPS 0 TO 4 READY",
     "WAITING FOR THE WHITE BASE TO BE PLACED...",
@@ -34,8 +34,10 @@ multilabel_help = [
     "PLACE THE GRAY ROTOR ON TOP OF THE PINK PART",
     "WELL DONE! LET'S CONTINUE WITH THE NEXT STEPS"]
 multilabel_error = [
+    "REMOVE THE PREVIOUS ASSEMBLY FROM THE BASE",
     "FLIP THE PINK PART, IT IS PLACED BACKWARDS",
-    "REMOVE THE PREVIOUS ASSEMBLY FROM THE BASE"]
+    "FLIP THE GRAY ROTOR, IT IS PLACED BACKWARDS",
+    "INSERT THE BLACK O-RING ON THE GREY ROTOR"]
 
 # object detection steps constants
 detection_labels = [
