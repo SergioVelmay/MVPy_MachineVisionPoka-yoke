@@ -44,3 +44,8 @@ gloves_name = 'SecurityGloves'
 
 gloves_image = url_route + gloves_name + '.png'
 gloves_mask = url_route + gloves_name + '_mask.png'
+
+caution_name = 'CautionDanger'
+
+caution_image = url_route + caution_name + '.png'
+caution_mask = url_route + caution_name + '_mask.png'
