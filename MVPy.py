@@ -115,7 +115,7 @@ welcome_message = welcome
 welcome_waiting = 0
 
 current_step = 0
-current_model = 2
+current_model = 0
 current_message = 0
 
 assembly_completed = False
@@ -235,7 +235,10 @@ def video_streaming():
         elif oring_tracking:
             detections = process_part_4_det(predictions)
             image = draw_detections(image, detections)
-            text = 'INSERT THE BLACK O-RING ON THE GREY ROTOR PART'
+            if not gloves_missing:
+                text = 'INSERT THE BLACK O-RING ON THE GREY ROTOR PART'
+            else:
+                text = 'SAFETY GLOVES ARE NEEDED TO RESUME ASSEMBLY'
             if part4_detected:
                 zoom = detections[0].Box
                 x1 = int(round(zoom.Left * 480))
@@ -257,8 +260,6 @@ def video_streaming():
                                     oring_tracking = False
                                     glove_tracking = False
                                     gloves_missing = False
-                            else:
-                                text = 'SAFETY GLOVES ARE NEEDED TO RESUME ASSEMBLY'
                         else:
                             color = colors_bgr['no']
                             draw_validation('no')
